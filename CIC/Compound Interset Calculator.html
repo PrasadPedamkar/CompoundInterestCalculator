@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compound Interest Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #001777;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .calculator {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        h2 {
+            color: #001777;
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+
+        }
+        
+        .description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        input::placeholder {
+            color: #999;
+            opacity: 1;
+        }
+        
+        .options-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .option {
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option.selected {
+            background-color: #001777;
+            color: white;
+        }
+        
+        .range-slider {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .result-container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .calculate-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .reset-btn {
+            background-color: #f1f1f1;
+            color: #333;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        .about-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>COMPOUND INTEREST CALCULATOR</h2>
+        <p class="description">Easily calculate the growth of your investments or the cost of loans with the <b>Finoledge Compound Interest Calculator</b>. This smart tool helps you project future values by factoring in compounding frequency, principal amount, interest rate, and time—giving you clear insights into your financial growth or debt obligations.
+
+</p>
+        
+        <div class="input-group">
+            <label for="initial-amount">Initial Investment (Lumpsum): *</label>
+            <div class="input-container">
+                <input type="number" id="initial-amount" placeholder="Ex. 100000" oninput="updateSlider(this.value, 'initial-amount-slider'); calculate()">
+                <input type="range" id="initial-amount-slider" min="1000" max="50000000" step="1000" value="100000" class="range-slider" oninput="updateAmount(this.value, 'initial-amount'); calculate()">
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label for="interest-rate">Interest Rate: *</label>
+            <input type="number" id="interest-rate" step="0.1" placeholder="Ex. 12" oninput="calculate()">
+        </div>
+        
+        <div class="input-group">
+            <label for="tenure">Tenure (years): *</label>
+            <input type="number" id="tenure" min="1" max="50" placeholder="Ex. 5" oninput="calculate()">
+        </div>
+        
+        <div class="input-group">
+            <label for="compounding-frequency">Compounding Frequency: *</label>
+            <div class="options-group">
+                <div class="option selected" onclick="selectOption(this, 'compounding-frequency', 'yearly'); calculate()">Yearly</div>
+                <div class="option" onclick="selectOption(this, 'compounding-frequency', 'half-yearly'); calculate()">Half-Yearly</div>
+                <div class="option" onclick="selectOption(this, 'compounding-frequency', 'quarterly'); calculate()">Quarterly</div>
+                <div class="option" onclick="selectOption(this, 'compounding-frequency', 'monthly'); calculate()">Monthly</div>
+            </div>
+        </div>
+      
+        
+        <div class="result-container">
+            <div class="result-item">
+                <span class="result-label">Total Amount Invested:</span>
+                <span class="result-value" id="total-invested">₹ 1,00,000</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Future Value:</span>
+                <span class="result-value" id="future-value">₹ 0</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Total Interest Accrued:</span>
+                <span class="result-value" id="total-interest">₹ 0</span>
+            </div>
+        </div>
+        
+        <div class="about-section">
+            Finoledge Compound Interest Calculator
+        </div>
+    </div>
+<script>
+    let compoundingFrequency = 'yearly';
+    
+    function selectOption(element, group, frequency) {
+        const options = element.parentElement.querySelectorAll('.option');
+        options.forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        
+        if (group === 'compounding-frequency') {
+            compoundingFrequency = frequency;
+        }
+        
+        calculate();
+    }
+
+    function updateAmount(value, elementId) {
+        document.getElementById(elementId).value = formatNumberInput(value);
+        calculate();
+    }
+    
+    function updateSlider(value, sliderId) {
+        const slider = document.getElementById(sliderId);
+        const numValue = parseNumberInput(value);
+        
+        if (isNaN(numValue)) return;
+        
+        if (numValue < slider.min) {
+            slider.value = slider.min;
+            document.getElementById(sliderId.replace('-slider', '')).value = formatNumberInput(slider.min);
+        } else if (numValue > slider.max) {
+            slider.value = slider.max;
+            document.getElementById(sliderId.replace('-slider', '')).value = formatNumberInput(slider.max);
+        } else {
+            slider.value = numValue;
+        }
+        
+        calculate();
+    }
+    
+    function calculate() {
+        const principal = parseNumberInput(document.getElementById('initial-amount').value);
+        const rate = parseNumberInput(document.getElementById('interest-rate').value) / 100;
+        const years = parseNumberInput(document.getElementById('tenure').value);
+        
+        if (isNaN(principal) || isNaN(rate) || isNaN(years)) return;
+        
+        // Calculate compounding periods per year
+        let n = 1;
+        switch(compoundingFrequency) {
+            case 'monthly': n = 12; break;
+            case 'quarterly': n = 4; break;
+            case 'half-yearly': n = 2; break;
+            case 'yearly': n = 1; break;
+        }
+        
+        // Calculate future value
+        const futureValue = principal * Math.pow(1 + (rate / n), n * years);
+        const totalInterest = futureValue - principal;
+        
+        // Update results
+        document.getElementById('total-invested').textContent = '₹ ' + formatNumberOutput(principal);
+        document.getElementById('future-value').textContent = '₹ ' + formatNumberOutput(futureValue);
+        document.getElementById('total-interest').textContent = '₹ ' + formatNumberOutput(totalInterest);
+    }
+    
+    function formatNumberInput(num) {
+        return num.toString().replace(/\D/g, '');
+    }
+    
+    function parseNumberInput(num) {
+        return parseFloat(num.toString().replace(/,/g, ''));
+    }
+    
+    function formatNumberOutput(num) {
+        return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+    
+    // Initialize calculator
+    window.onload = function() {
+        calculate();
+    };
+</script>
+</body>
+</html>
